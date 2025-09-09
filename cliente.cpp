@@ -81,24 +81,21 @@ int main(int argc, char **argv) {
         exit(2);
     }
 
-    // Connects o the server
+    // Connects to the server
     connect(clientSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr));
 
     // From here on can send and receive messages
 
     // Generates the AES key
-    unsigned char aes_key[32];  // 256 bits
-    if (RAND_bytes(aes_key, sizeof(aes_key)) != 1) {
+    unsigned char aesKey[32];  // 256 bits
+    if (RAND_bytes(aesKey, sizeof(aesKey)) != 1) {
         printf("Error generating AES key\n");
         return 1;
     }
 
-    // Need to generate a new iv for every encryption
-    unsigned char iv[16];  // 16 bytes for AES block size
-    RAND_bytes(iv, sizeof(iv));
-
     // Should send a message with an encrypted AES key
-    unsigned char *buffer = (unsigned char *)malloc(1024);
+    size_t size = 0;
+    unsigned char *buffer = rsaEncryptEvp(rsaKey, aesKey, 32, &size);
 
     send(clientSocket, buffer, sizeof(buffer), 0);
 
