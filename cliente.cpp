@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
 
     // Generates the AES key
     unsigned char aesKey[32];  // 256 bits
-    if (RAND_bytes(aesKey, sizeof(aesKey)) != 1) {
+    if (RAND_bytes(aesKey, 32) != 1) {
         printf("Error generating AES key\n");
         return 1;
     }
@@ -96,9 +96,10 @@ int main(int argc, char **argv) {
     // Should send a message with an encrypted AES key
     size_t size = 0;
     unsigned char *buffer = rsaEncryptEvp(rsaKey, aesKey, 32, &size);
-
-    send(clientSocket, buffer, sizeof(buffer), 0);
+    send(clientSocket, buffer, size, 0);
 
     // Close clientSocket
     close(clientSocket);
+    free(buffer);
+    EVP_PKEY_free(rsaKey);
 }

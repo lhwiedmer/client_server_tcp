@@ -82,7 +82,6 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Numero de argumentos insuficiente\n");
         exit(1);
     }
-    printf("1");
     // Puts the RSA key in memory
     EVP_PKEY *rsaKey = loadPrivateKey(argv[2]);
 
@@ -92,18 +91,15 @@ int main(int argc, char **argv) {
     // Starts listening
     listen(serverSocket, 1);
 
-    printf("1");
     // Accepts a request for connection
     int clientSocket = accept(serverSocket, nullptr, nullptr);
 
     // From here on can send and receive messages
-    printf("1");
     // Should get a message with an encrypted AES key
     unsigned char *buffer = (unsigned char *)malloc(1024);
-    recv(clientSocket, buffer, sizeof(buffer), 0);
+    recv(clientSocket, buffer, 1024, 0);
 
     size_t decLen = 0;
-    printf("1");
     // Decrypt with the RSA key
     unsigned char *aesKey = rsaDecryptEvp(rsaKey, buffer, 256, &decLen);
 
@@ -119,4 +115,8 @@ int main(int argc, char **argv) {
 
     // Close serverSocket
     close(serverSocket);
+    close(clientSocket);
+    free(buffer);
+    EVP_PKEY_free(rsaKey);
+    free(aesKey);
 }
