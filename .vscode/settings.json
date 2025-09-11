@@ -3,6 +3,8 @@
         "*.ejs": "html",
         "": "",
         "*.ll": "plaintext",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "random": "cpp",
+        "system_error": "cpp"
     }
 }

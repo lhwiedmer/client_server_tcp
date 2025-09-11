@@ -8,53 +8,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-/**
- * @brief Decrypts a message encoded with RSA
- * @param privKey Private RSA key
- * @param encMsg Message to be decrypted
- * @param encLen Length of the encrypted message
- * @param decLen Variable that will contain the length of the actual message
- * @return The decrypted message
- */
-unsigned char *rsaDecryptEvp(EVP_PKEY *privkey, const unsigned char *encMsg,
-                             size_t encLen, size_t *decLen) {
-    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(privkey, NULL);
-    if (!ctx) exit(4);
-
-    if (EVP_PKEY_decrypt_init(ctx) <= 0) {
-        exit(4);
-    }
-    if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING) <= 0) {
-        exit(4);
-    }
-
-    // Descobrir tamanho necessário
-    if (EVP_PKEY_decrypt(ctx, NULL, decLen, encMsg, encLen) <= 0) {
-        exit(4);
-    }
-
-    unsigned char *decrypted = (unsigned char *)malloc(*decLen);
-
-    if (EVP_PKEY_decrypt(ctx, decrypted, decLen, encMsg, encLen) <= 0) {
-        exit(4);
-    }
-
-    EVP_PKEY_CTX_free(ctx);
-    return decrypted;
-}
-
-/**
- * @brief Loads the private key in a file to a EVP_KEY
- * @param filename Name of the file with the private key
- * @return EVP_KEY containing the key that was in the file
- */
-EVP_PKEY *loadPrivateKey(const char *filename) {
-    FILE *fp = fopen(filename, "r");
-    if (!fp) return NULL;
-    EVP_PKEY *pkey = PEM_read_PrivateKey(fp, NULL, NULL, NULL);
-    fclose(fp);
-    return pkey;
-}
+#include "decrypt/decrypt.hpp"
+#include "encrypt/encrypt.hpp"
 
 /**
  * @brief Creates a socket and binds it to a ip address

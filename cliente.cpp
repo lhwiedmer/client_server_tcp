@@ -10,55 +10,8 @@
 #include <iostream>
 #include <string>
 
-/**
- * @brief Encrypts a message with RSA
- * @param pubKey Public RSA key
- * @param msg Message to be encrypted
- * @param msgLen Length of the message
- * @param encLen Variable that will contain the length of the encrypted message
- * @return The encrypted message
- */
-unsigned char *rsaEncryptEvp(EVP_PKEY *pubkey, const unsigned char *msg,
-                             size_t msgLen, size_t *encLen) {
-    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(pubkey, NULL);
-    if (!ctx) {
-        exit(3);
-    }
-
-    if (EVP_PKEY_encrypt_init(ctx) <= 0) {
-        exit(3);
-    }
-    if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING) <= 0) {
-        exit(3);
-    }
-
-    // Descobrir tamanho necessário
-    if (EVP_PKEY_encrypt(ctx, NULL, encLen, msg, msgLen) <= 0) {
-        exit(3);
-    }
-
-    unsigned char *encrypted = (unsigned char *)malloc(*encLen);
-
-    if (EVP_PKEY_encrypt(ctx, encrypted, encLen, msg, msgLen) <= 0) {
-        exit(3);
-    }
-
-    EVP_PKEY_CTX_free(ctx);
-    return encrypted;
-}
-
-/**
- * @brief Loads the public key in a file to a EVP_KEY
- * @param filename Name of the file with the private key
- * @return EVP_KEY containing the key that was in the file
- */
-EVP_PKEY *loadPublicKey(const char *filename) {
-    FILE *fp = fopen(filename, "r");
-    if (!fp) return NULL;
-    EVP_PKEY *pkey = PEM_read_PUBKEY(fp, NULL, NULL, NULL);
-    fclose(fp);
-    return pkey;
-}
+#include "decrypt/decrypt.hpp"
+#include "encrypt/encrypt.hpp"
 
 int main(int argc, char **argv) {
     if (argc != 3) {
@@ -97,6 +50,9 @@ int main(int argc, char **argv) {
     size_t size = 0;
     unsigned char *buffer = rsaEncryptEvp(rsaKey, aesKey, 32, &size);
     send(clientSocket, buffer, size, 0);
+
+    // Put a function to send a file divided in 4kb buffers
+    // Each one must be encrypted using AES
 
     // Close clientSocket
     close(clientSocket);
