@@ -29,7 +29,9 @@ unsigned char *rsaEncryptEvp(EVP_PKEY *pubkey, const unsigned char *msg,
     return encrypted;
 }
 
-unsigned char *aesEncryptEvp() {}
+unsigned char *aesEncryptEvp(unsigned char *aesKey, unsigned char *msg,
+                             size_t msgLen, unsigned char *iv,
+                             unsigned char *encMsgLen) {}
 
 EVP_PKEY *loadPublicKey(const char *filename) {
     FILE *fp = fopen(filename, "r");
