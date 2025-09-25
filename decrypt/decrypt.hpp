@@ -1,5 +1,8 @@
 /**
  * @file decrypt.hpp
+ * @brief Describres the functions used for decryption in this system
+ * @author Luiz Henrique Murback Wiedmer
+ * @date 2025-09-25
  */
 
 #ifndef DECRYPT_HPP

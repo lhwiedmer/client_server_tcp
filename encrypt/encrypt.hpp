@@ -1,5 +1,8 @@
 /**
  * @file encrypt.hpp
+ * @brief Describes the functions used for encryption in this system
+ * @author Luiz Henrique Murback Wiedmer
+ * @date 2025-09-25
  */
 
 #ifndef ENCRYPT_HPP
@@ -17,7 +20,7 @@
  * @param encLen Variable that will contain the length of the encrypted message
  * @return The encrypted message
  */
-unsigned char *rsaEncryptEvp(EVP_PKEY *pubkey, const unsigned char *msg,
+unsigned char *rsaEncryptEvp(EVP_PKEY *key, const unsigned char *msg,
                              size_t msgLen, size_t *encLen);
 
 /**

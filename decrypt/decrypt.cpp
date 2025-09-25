@@ -1,3 +1,10 @@
+/**
+ * @file decrypt.cpp
+ * @brief Implements the functions used for decryption in this system
+ * @author Luiz Henrique Murback Wiedmer
+ * @date 2025-09-25
+ */
+
 #include "decrypt.hpp"
 
 unsigned char *rsaDecryptEvp(EVP_PKEY *privkey, const unsigned char *encMsg,

@@ -1,3 +1,10 @@
+/**
+ * @file cliente.cpp
+ * @brief Main program for the client side of the application
+ * @author Luiz Henrique Murback Wiedmer
+ * @date 2025-09-25
+ */
+
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <openssl/evp.h>

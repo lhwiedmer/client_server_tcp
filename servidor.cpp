@@ -1,3 +1,10 @@
+/**
+ * @file cliente.cpp
+ * @brief Main program for the server side of the application
+ * @author Luiz Henrique Murback Wiedmer
+ * @date 2025-09-25
+ */
+
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <openssl/evp.h>
@@ -10,6 +17,8 @@
 
 #include "decrypt/decrypt.hpp"
 #include "encrypt/encrypt.hpp"
+#include "sign/sign.hpp"
+#include "verify/verify.hpp"
 
 /**
  * @brief Creates a socket and binds it to a ip address

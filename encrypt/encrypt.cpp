@@ -1,8 +1,15 @@
+/**
+ * @file encrypt.cpp
+ * @brief Implements the functions used for encryption in this system
+ * @author Luiz Henrique Murback Wiedmer
+ * @date 2025-09-25
+ */
+
 #include "encrypt.hpp"
 
-unsigned char *rsaEncryptEvp(EVP_PKEY *pubkey, const unsigned char *msg,
+unsigned char *rsaEncryptEvp(EVP_PKEY *key, const unsigned char *msg,
                              size_t msgLen, size_t *encLen) {
-    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(pubkey, NULL);
+    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(key, NULL);
     if (!ctx) {
         exit(3);
     }
