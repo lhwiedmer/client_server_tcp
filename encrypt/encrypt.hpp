@@ -35,12 +35,13 @@ unsigned char *rsaEncryptEvp(EVP_PKEY *key, const unsigned char *msg,
  * @param[in] msg Message to be encrypted
  * @param[in] msgLen Length of the message to be encrypted
  * @param[in] iv The initial vector that will be used to encrypt the message
+ * @param[out] tag Tag to validate integrity(must be 16 bytes)
  * @param[out] encLen Length of the encrypted message
  * @return The encrypted text
  */
 unsigned char *aesEncryptEvp(const unsigned char *key, const unsigned char *msg,
                              size_t msgLen, const unsigned char *iv,
-                             size_t *encLen);
+                             unsigned char *tag, size_t *encLen);
 
 /**
  * @brief Generates a signature using RSA

@@ -35,6 +35,45 @@ unsigned char *rsaDecryptEvp(EVP_PKEY *privkey, const unsigned char *encMsg,
     return decrypted;
 }
 
+unsigned char *aesDecryptEvp(const unsigned char *key,
+                             const unsigned char *encrypted, unsigned char *tag,
+                             size_t msgLen, const unsigned char *iv,
+                             unsigned char *decLen) {
+    EVP_CIPHER_CTX *ctx;
+    int len;
+    unsigned char *decrypted = (unsigned char *)malloc(msgLen);
+
+    ctx = EVP_CIPHER_CTX_new();
+    if (!ctx) {
+        exit(1);
+    };
+
+    if (!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, key, iv)) {
+        exit(1);
+    }
+
+    if (!EVP_DecryptUpdate(ctx, decrypted, &len, encrypted, msgLen)) {
+        exit(1);
+    }
+
+    *decLen = len;
+
+    // Pega o TAG de autenticação
+    if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, AES_TAGLEN,
+                             (void *)tag)) {
+        exit(1);
+    }
+
+    if (!EVP_DecryptFinal_ex(ctx, decrypted + len, &len)) {
+        exit(1);
+    }
+
+    *decLen += len;
+
+    EVP_CIPHER_CTX_free(ctx);
+    return decrypted;
+}
+
 unsigned char *rsaSignEvp(EVP_PKEY *key, const unsigned char *msg,
                           size_t msgLen, size_t *sigLen) {
     EVP_MD_CTX *ctx = EVP_MD_CTX_new();

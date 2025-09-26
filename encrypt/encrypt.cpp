@@ -44,7 +44,8 @@ unsigned char *rsaEncryptEvp(EVP_PKEY *key, const unsigned char *msg,
 }
 
 unsigned char *aesEncryptEvp(unsigned char *key, unsigned char *msg,
-                             size_t msgLen, unsigned char *iv, size_t *encLen) {
+                             size_t msgLen, unsigned char *iv,
+                             unsigned char *tag, size_t *encLen) {
     EVP_CIPHER_CTX *ctx;
     int len;
     unsigned char *encrypted = (unsigned char *)malloc(msgLen);
@@ -69,8 +70,6 @@ unsigned char *aesEncryptEvp(unsigned char *key, unsigned char *msg,
     }
 
     *encLen += len;
-
-    unsigned char *tag;
 
     // Pega o TAG de autenticação
     if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, AES_TAGLEN, tag)) {
