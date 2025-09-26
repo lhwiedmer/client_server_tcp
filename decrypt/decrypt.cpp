@@ -1,6 +1,7 @@
 /**
  * @file decrypt.cpp
- * @brief Implements the functions used for decryption in this system
+ * @brief Implements the functions used for decryption and signing in this
+ * system
  * @author Luiz Henrique Murback Wiedmer
  * @date 2025-09-25
  */
@@ -32,6 +33,40 @@ unsigned char *rsaDecryptEvp(EVP_PKEY *privkey, const unsigned char *encMsg,
 
     EVP_PKEY_CTX_free(ctx);
     return decrypted;
+}
+
+unsigned char *rsaSignEvp(EVP_PKEY *key, const unsigned char *msg,
+                          size_t msgLen, size_t *sigLen) {
+    EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+    if (!ctx) {
+        fprintf(stderr, "rsaSignEvp(1)\n");
+        exit(1);
+    }
+
+    if (!EVP_DigestSignInit(ctx, NULL, EVP_sha256(), NULL, key)) {
+        fprintf(stderr, "rsaSignEvp(2)\n");
+        exit(1);
+    }
+
+    if (!EVP_DigestSignUpdate(ctx, msg, msgLen)) {
+        fprintf(stderr, "rsaSignEvp(3)\n");
+        exit(1);
+    }
+
+    if (!EVP_DigestSignFinal(ctx, NULL, sigLen)) {
+        fprintf(stderr, "rsaSignEvp(4)\n");
+        exit(1);
+    }
+
+    unsigned char *signature = (unsigned char *)malloc(*sigLen);
+
+    if (!EVP_DigestSignFinal(ctx, signature, sigLen)) {
+        fprintf(stderr, "rsaSignEvp(5)\n");
+        exit(1);
+    }
+
+    EVP_MD_CTX_free(ctx);
+    return signature;
 }
 
 EVP_PKEY *loadPrivateKey(const char *filename) {

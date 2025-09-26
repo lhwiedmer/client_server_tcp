@@ -17,8 +17,6 @@
 
 #include "decrypt/decrypt.hpp"
 #include "encrypt/encrypt.hpp"
-#include "sign/sign.hpp"
-#include "verify/verify.hpp"
 
 /**
  * @brief Creates a socket and binds it to a ip address

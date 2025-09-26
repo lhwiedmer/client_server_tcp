@@ -1,6 +1,7 @@
 /**
  * @file decrypt.hpp
- * @brief Describres the functions used for decryption in this system
+ * @brief Describres the functions used for decryption and signing in this
+ * system
  * @author Luiz Henrique Murback Wiedmer
  * @date 2025-09-25
  */
@@ -12,6 +13,10 @@
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
 
+#define AES_KEYLEN 32  // 256 bits
+#define AES_IVLEN 12   // 96 bits (recomendado para GCM)
+#define AES_TAGLEN 16  // 128 bits
+
 /**
  * @brief Decrypts a message encoded with RSA
  * @param privKey Private RSA key
@@ -22,6 +27,27 @@
  */
 unsigned char *rsaDecryptEvp(EVP_PKEY *privkey, const unsigned char *encMsg,
                              size_t encLen, size_t *decLen);
+
+/**
+ * @brief Encrypts a message with AES
+ * @param[in] aesKey AES key
+ * @param[in] msg Message to be encrypted
+ * @param[in] msgLen Length of the message to be encrypted
+ * @param[in] iv The initial vector that will be used to encrypt the message
+ * @param[out] encMsgLen Length of the encrypted message
+ * @return The encrypted text
+ */
+unsigned char *aesDecryptEvp(unsigned char *aesKey, unsigned char *msg,
+                             size_t msgLen, unsigned char *iv,
+                             unsigned char *encMsgLen);
+
+/**
+ * @brief Generates a signature using RSA
+ * @param[in] key RSA Private key
+ *
+ */
+unsigned char *rsaSignEvp(EVP_PKEY *key, const unsigned char *msg,
+                          size_t msgLen, size_t *encLen);
 
 /**
  * @brief Loads the private key in a file to a EVP_KEY
