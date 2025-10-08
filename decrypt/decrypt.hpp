@@ -46,14 +46,17 @@ unsigned char *aesDecryptEvp(const unsigned char *key,
 /**
  * @brief Generates a signature using RSA
  * @param[in] key RSA Private key
- *
+ * @param[in] msg Message to be signed
+ * @param[in] msgLen Length of msg
+ * @param[out] encLen Length of the returned signed msg
+ * @return The signed message
  */
 unsigned char *rsaSignEvp(EVP_PKEY *key, const unsigned char *msg,
                           size_t msgLen, size_t *encLen);
 
 /**
  * @brief Loads the private key in a file to a EVP_KEY
- * @param filename Name of the file with the private key
+ * @param[in] filename Name of the file with the private key
  * @return EVP_KEY containing the key that was in the file
  */
 EVP_PKEY *loadPrivateKey(const char *filename);

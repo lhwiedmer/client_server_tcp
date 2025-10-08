@@ -11,24 +11,31 @@
 unsigned char *rsaDecryptEvp(EVP_PKEY *privkey, const unsigned char *encMsg,
                              size_t encLen, size_t *decLen) {
     EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(privkey, NULL);
-    if (!ctx) exit(4);
+    if (!ctx) {
+        fprintf(stderr, "rsaDecryptEvp(1)\n");
+        exit(1);
+    }
 
     if (EVP_PKEY_decrypt_init(ctx) <= 0) {
-        exit(4);
+        fprintf(stderr, "rsaDecryptEvp(2)\n");
+        exit(1);
     }
     if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING) <= 0) {
-        exit(4);
+        fprintf(stderr, "rsaDecryptEvp(3)\n");
+        exit(1);
     }
 
     // Descobrir tamanho necessário
     if (EVP_PKEY_decrypt(ctx, NULL, decLen, encMsg, encLen) <= 0) {
-        exit(4);
+        fprintf(stderr, "rsaDecryptEvp(4)\n");
+        exit(1);
     }
 
     unsigned char *decrypted = (unsigned char *)malloc(*decLen);
 
     if (EVP_PKEY_decrypt(ctx, decrypted, decLen, encMsg, encLen) <= 0) {
-        exit(4);
+        fprintf(stderr, "rsaDecryptEvp(5)\n");
+        exit(1);
     }
 
     EVP_PKEY_CTX_free(ctx);
@@ -45,14 +52,17 @@ unsigned char *aesDecryptEvp(const unsigned char *key,
 
     ctx = EVP_CIPHER_CTX_new();
     if (!ctx) {
+        fprintf(stderr, "aesDecryptEvp(1)\n");
         exit(1);
     };
 
     if (!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, key, iv)) {
+        fprintf(stderr, "aesDecryptEvp(2)\n");
         exit(1);
     }
 
     if (!EVP_DecryptUpdate(ctx, decrypted, &len, encrypted, msgLen)) {
+        fprintf(stderr, "aesDecryptEvp(3)\n");
         exit(1);
     }
 
@@ -61,10 +71,12 @@ unsigned char *aesDecryptEvp(const unsigned char *key,
     // Pega o TAG de autenticação
     if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, AES_TAGLEN,
                              (void *)tag)) {
+        fprintf(stderr, "aesDecryptEvp(4)\n");
         exit(1);
     }
 
     if (!EVP_DecryptFinal_ex(ctx, decrypted + len, &len)) {
+        fprintf(stderr, "aesDecryptEvp(5)\n");
         exit(1);
     }
 
@@ -110,7 +122,10 @@ unsigned char *rsaSignEvp(EVP_PKEY *key, const unsigned char *msg,
 
 EVP_PKEY *loadPrivateKey(const char *filename) {
     FILE *fp = fopen(filename, "r");
-    if (!fp) return NULL;
+    if (!fp) {
+        fprintf(stderr, "loadPrivateKey(1)\n");
+        exit(1);
+    }
     EVP_PKEY *pkey = PEM_read_PrivateKey(fp, NULL, NULL, NULL);
     fclose(fp);
     return pkey;

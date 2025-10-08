@@ -44,7 +44,7 @@ unsigned char *aesEncryptEvp(const unsigned char *key, const unsigned char *msg,
                              unsigned char *tag, size_t *encLen);
 
 /**
- * @brief Generates a signature using RSA
+ * @brief Verifies a signature using RSA
  * @param[in] key RSA Public key
  * @param[in] msg Message to be verified
  * @param[in] msgLen Length of the message being

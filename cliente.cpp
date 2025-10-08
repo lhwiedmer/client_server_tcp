@@ -14,37 +14,54 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include <iostream>
-#include <string>
-
 #include "decrypt/decrypt.hpp"
 #include "encrypt/encrypt.hpp"
 
-int main(int argc, char **argv) {
-    if (argc != 3) {
-        fprintf(stderr, "Numero de argumentos insuficiente\n");
-        exit(1);
-    }
-
-    // Puts the RSA key in memory
-    EVP_PKEY *rsaKey = loadPublicKey(argv[2]);
-
-    // Creates a socket
+/**
+ * @brief Creates a socket and connects it to the server
+ * @param[in] serverIpAddr IP address which the socket will be connected to
+ * @return The created socket
+ */
+int createClientSocket(char *serverIpAddr) {
     int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
     sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(8080);
 
-    if (inet_pton(AF_INET, argv[1], &serverAddr.sin_addr) != 1) {
+    if (inet_pton(AF_INET, serverIpAddr, &serverAddr.sin_addr) != 1) {
         fprintf(stderr, "IP Inválido\n");
         exit(2);
     }
-
     // Connects to the server
     connect(clientSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr));
 
+    return clientSocket;
+}
+
+int main(int argc, char **argv) {
+    if (argc != 4) {
+        fprintf(stderr, "Numero de argumentos insuficiente\n");
+        exit(1);
+    }
+
+    // Puts the RSA key in memory
+    EVP_PKEY *rsaEncryptKey = loadPublicKey(argv[2]);
+    EVP_PKEY *rsaSignKey = loadPrivateKey(argv[3]);
+
+    // Creates a socket
+    int clientSocket = createClientSocket(argv[1]);
+
     // From here on can send and receive messages
+
+    // Generate random string
+    unsigned char randStr[16];
+    if (RAND_bytes(randStr, 16) != 1) {
+        fprintf(stderr, "Error generating random string\n");
+        exit(4);
+    }
+
+    send(clientSocket, randStr, 16, 0);
 
     // Generates the AES key
     unsigned char aesKey[32];  // 256 bits
@@ -55,7 +72,7 @@ int main(int argc, char **argv) {
 
     // Should send a message with an encrypted AES key
     size_t size = 0;
-    unsigned char *buffer = rsaEncryptEvp(rsaKey, aesKey, 32, &size);
+    unsigned char *buffer = rsaEncryptEvp(rsaEncryptKey, aesKey, 32, &size);
     send(clientSocket, buffer, size, 0);
 
     // Put a function to send a file divided in 4kb buffers
@@ -64,5 +81,6 @@ int main(int argc, char **argv) {
     // Close clientSocket
     close(clientSocket);
     free(buffer);
-    EVP_PKEY_free(rsaKey);
+    EVP_PKEY_free(rsaSignKey);
+    EVP_PKEY_free(rsaEncryptKey);
 }
